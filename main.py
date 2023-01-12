@@ -1,18 +1,17 @@
 from fastapi import FastAPI
 from motor.motor_asyncio import AsyncIOMotorClient
-from beanie import init_beanie, Document,PydanticObjectId
 from fastapi.middleware.cors import CORSMiddleware
-from beanie import Document
-from typing import Optional
-
+from beanie import init_beanie
+from models.note import Note
+from api.note import router
 
 
 app = FastAPI()
 
 
-class Note(Document):
-    id: Optional[PydanticObjectId] = None
-    note: str
+app.include_router(router)
+
+
 
 async def init(client: AsyncIOMotorClient, db_name: str) -> None:
     """
@@ -33,9 +32,7 @@ client = AsyncIOMotorClient(DATABASE_URL)
 
 
 
-@app.get("/")
-async def root():
-    return {"message": "Hello World"}
+
 
 @app.on_event("startup")
 async def configure_db_and_routes(db_name: str = "note_db") -> None:
